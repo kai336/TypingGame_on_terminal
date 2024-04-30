@@ -1,0 +1,3 @@
+#!/bin/bash
+g++ main.cpp utils.cpp words.cpp -lncurses
+./a.out

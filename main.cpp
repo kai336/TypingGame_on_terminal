@@ -67,7 +67,7 @@ void menu_chose(){
     curs_set(0);
     clear();
     while(true){
-        mvprintcenter(y/2-4, x/2, "Chose the number of words");
+        mvprintcenter(y/2-4, x/2, "Press 'A' or 'D' to chose the number of words");
 
         attron(COLOR_PAIR(3*(cursor==0)));
         mvprintcenter(y/2, x/2-10, "10 words");
