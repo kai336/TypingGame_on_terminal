@@ -1,215 +1,4 @@
-#include <ncurses.h>
-#include <bits/stdc++.h>
-#include <unistd.h>
-using namespace std;
-
-const int K_ENTER = 10;
-const int K_ESC = 27;
-const int K_SPACE = 32;
-const int K_BACKSPACE = 127;
-const int K_TAB = 9;
-
-const vector<string> words_list = {
-    "the",
-    "be",
-    "of",
-    "and",
-    "a",
-    "to",
-    "in",
-    "he",
-    "have",
-    "it",
-    "that",
-    "for",
-    "they",
-    "with",
-    "as",
-    "not",
-    "on",
-    "she",
-    "at",
-    "by",
-    "this",
-    "we",
-    "you",
-    "do",
-    "but",
-    "from",
-    "or",
-    "which",
-    "one",
-    "would",
-    "all",
-    "will",
-    "there",
-    "say",
-    "who",
-    "make",
-    "when",
-    "can",
-    "more",
-    "if",
-    "no",
-    "man",
-    "out",
-    "other",
-    "so",
-    "what",
-    "time",
-    "up",
-    "go",
-    "about",
-    "than",
-    "into",
-    "could",
-    "state",
-    "only",
-    "new",
-    "year",
-    "some",
-    "take",
-    "come",
-    "these",
-    "know",
-    "see",
-    "use",
-    "get",
-    "like",
-    "then",
-    "first",
-    "any",
-    "work",
-    "now",
-    "may",
-    "such",
-    "give",
-    "over",
-    "think",
-    "most",
-    "even",
-    "find",
-    "day",
-    "also",
-    "after",
-    "way",
-    "many",
-    "must",
-    "look",
-    "before",
-    "great",
-    "back",
-    "through",
-    "long",
-    "where",
-    "much",
-    "should",
-    "well",
-    "people",
-    "down",
-    "own",
-    "just",
-    "because",
-    "good",
-    "each",
-    "those",
-    "feel",
-    "seem",
-    "how",
-    "high",
-    "too",
-    "place",
-    "little",
-    "world",
-    "very",
-    "still",
-    "nation",
-    "hand",
-    "old",
-    "life",
-    "tell",
-    "write",
-    "become",
-    "here",
-    "show",
-    "house",
-    "both",
-    "between",
-    "need",
-    "mean",
-    "call",
-    "develop",
-    "under",
-    "last",
-    "right",
-    "move",
-    "thing",
-    "general",
-    "school",
-    "never",
-    "same",
-    "another",
-    "begin",
-    "while",
-    "number",
-    "part",
-    "turn",
-    "real",
-    "leave",
-    "might",
-    "want",
-    "point",
-    "form",
-    "off",
-    "child",
-    "few",
-    "small",
-    "since",
-    "against",
-    "ask",
-    "late",
-    "home",
-    "interest",
-    "large",
-    "person",
-    "end",
-    "open",
-    "public",
-    "follow",
-    "during",
-    "present",
-    "without",
-    "again",
-    "hold",
-    "govern",
-    "around",
-    "possible",
-    "head",
-    "consider",
-    "word",
-    "program",
-    "problem",
-    "however",
-    "lead",
-    "system",
-    "set",
-    "order",
-    "eye",
-    "plan",
-    "run",
-    "keep",
-    "face",
-    "fact",
-    "group",
-    "play",
-    "stand",
-    "increase",
-    "early",
-    "course",
-    "change",
-    "help",
-    "line"
-};
+#include "words.hpp"
 
 void main_menu();
 void make_test(vector<string>&, int);
@@ -230,11 +19,11 @@ int y, x;
 int main(){
     initscr();
     noecho();
-    curs_set(0);
+    //curs_set(0);
     start_color();
     getmaxyx(stdscr, y, x);
-    init_pair(1, COLOR_CYAN, COLOR_BLACK); // correct
-    init_pair(2, COLOR_RED, COLOR_BLACK); // wrong
+    init_pair(1, COLOR_CYAN, COLOR_BLACK); // color of correct
+    init_pair(2, COLOR_RED, COLOR_BLACK); // color of wrong
     main_menu();
     endwin();
     return 0;
@@ -286,7 +75,11 @@ void type(){
     res.push_back(vector<int>());
     while(true){
         //disp_singleword(res, input, test, word_idx, y/2, x/2);
-        disp_multi_oneline(res, input, test, word_idx);
+        curs_set(0);
+        disp_multi_oneline(res, input, test, word_idx); // display words in one line
+        curs_set(1);
+        move(y/2, x/2+p);
+        refresh();
         int ch = getch();
         //flushinp();
 
@@ -300,18 +93,17 @@ void type(){
                 res[word_idx].pop_back();
                 p--;
                 }
-        }else if(ch==K_SPACE){
-            // start timer
-            if(word_idx==0 && p==0) start = chrono::system_clock::now();
+        }else if(ch==K_SPACE || ch==K_ENTER){
             // next word
-            if(word_idx+1 < test.size()){
+            if(word_idx==0 && p==0) start = chrono::system_clock::now(); // start timer
+            else if(word_idx+1 < test.size()){
                 input.push_back("");
                 res.push_back(vector<int>());
                 p = 0;
                 word_idx++;
             }else{
                 // finish
-                chrono::system_clock::time_point end = chrono::system_clock::now();
+                chrono::system_clock::time_point end = chrono::system_clock::now(); // stop timer
                 auto time = end - start;
                 double msec =  chrono::duration_cast<chrono::milliseconds>(time).count();
                 double wpm = calcwpm(res, msec);
@@ -319,10 +111,9 @@ void type(){
                 finished(result, wpm);
                 break;
             }
-        }else if(ch>=97 && ch<=122){
+        }else if((ch>='A' && ch<='Z') || (ch>='a' && ch<='z')){
             // input alphabet
-            // start timer
-            if(word_idx==0 && p==0) start = chrono::system_clock::now();
+            if(word_idx==0 && p==0) start = chrono::system_clock::now(); // start timer
             input[word_idx].push_back(char(ch));
             res[word_idx].push_back(judge(input, test, word_idx, p));
             p++;
