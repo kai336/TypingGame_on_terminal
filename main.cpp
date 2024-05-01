@@ -138,7 +138,7 @@ void type(int size){
                 }
         }else if(ch==K_SPACE || ch==K_ENTER){
             // next word
-            if(word_idx==0 && p==0) start = chrono::system_clock::now(); // start timer
+            if(p==0) continue;
             else if(word_idx+1 < test.size()){
                 input.push_back("");
                 res.push_back(vector<int>());
